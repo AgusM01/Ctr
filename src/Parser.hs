@@ -62,8 +62,7 @@ ctr = makeTokenParser
 --              | one date cur -> Cur por ahora solo USD
 --              |'give' ContExp1 
 --              | 'truncate' var ContExp1
---              | 'scale' var ContExp1  
---              | 'anytime' ContExp1
+--              | 'scale' nat ContExp1  
 --              | var
 --              | '(' ContExp1 ')'
 
@@ -135,14 +134,10 @@ truncateParser = try (do reservedOp ctr "truncate"
                              return (TruncateD d c)
 
 scaleParser :: Parser Contract
-scaleParser = try (do reservedOp ctr "scale"
-                      n <- natural ctr
-                      c <- contexp1
-                      return (ScaleN (fromInteger n) c))
-                 <|> do reservedOp ctr "scale"
-                        v <- varParser
-                        c <- contexp1 
-                        return (ScaleV v c)
+scaleParser = do reservedOp ctr "scale"
+                 n <- natural ctr
+                 c <- contexp1
+                 return (Scale (fromInteger n) c)
 {-
 anytimeParser :: Parser Contract
 anytimeParser = do reservedOp ctr "anytime"

@@ -20,6 +20,7 @@ data Date = D Day Month Year deriving Show
 -- y pasando todos los valores a dicha moneda.
 --data Currency = GBP | USD | ARS | EUR deriving Show 
 
+{-
 --------- VER SI INCLUIR -------------------------------------------------------
 -- Las variables observables son aquellas cuyo valor 
 -- puede ser determinado a partir de fuentes verificables,
@@ -43,6 +44,7 @@ instance Applicative Obs where
     (CONST f) <*> x         = fmap f x 
     (LIBOR f) <*> x         = fmap f x
     (EUAP f) <*>  x         = fmap f x
+-}
 
 type Var = String
 
@@ -60,8 +62,7 @@ data Contract = Zero
                 | TruncateV Var Contract 
                 | TruncateD Date Contract 
                 | Then Contract Contract
-                | ScaleN Int Contract -- Me permite crear contratos de mayor valor. <- Analizar observables.
-                | ScaleV Var Contract
+                | Scale Int Contract -- Me permite crear contratos de mayor valor. <- Analizar observables.
  --               | Get Contract
    --             | Anytime Contract
                 | VarC Var deriving Show -- Para poder representar contratos con variables.
