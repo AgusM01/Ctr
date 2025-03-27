@@ -1,0 +1,16 @@
+date 13 3 2025;
+// s_init = 0 USD; -> Siempre se empieza con 0.
+c_z = zero;
+c_one = one 28 12 2025 USD;
+c_scale = scale 10 (one 28 12 2025 USD);
+c_give = give (scale 20 (one 28 12 2025 USD));
+c_get = get (scale 30 (one 13 3 2025 USD))
+
+// El resultado de la evaluación sería el monto de dinero con el que se termina
+// y un log que dice para x fecha se tendrá x suma de dinero.
+
+// Tambien puede ser que el usuario pida el monto de dinero para x fecha.
+// Si falta información -> pedirle al usuario.
+
+// La idea es guardar un mapa que asocie cada fecha a un valor de dinero.
+// Luego poder ordenar esas fechas de la mas antigua a la mas nueva y realizar un gráfico.
