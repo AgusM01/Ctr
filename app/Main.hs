@@ -3,6 +3,8 @@ module Main (main) where
 import            System.Console.GetOpt
 import            Parser                ( parseComm )
 import            Lib
+import            System.Exit
+import            Control.Monad
 import qualified  System.Environment    as Env 
 import qualified  Eval                  as E
 
@@ -15,7 +17,7 @@ data Options = Options -- Define las opciones utilizando un registro.
     } deriving Show
 
 defaultOptions :: Options 
-defaultOptions = Options { optAST = False, optEvaL = False, optHelp = False }
+defaultOptions = Options { optAST = False, optEval = False, optHelp = False }
 
 -- Cada función sirve para actualizar el campo:
 -- (\opts -> opts { optAST = True }) (Options False [] False) 
@@ -52,6 +54,7 @@ options =
 -- foldl (flip id) defaultOptions o = id (\opts -> opts { optAST = True }) (Options { optAST = False, optEvaL = False, optHelp = False })
 -- y así le va cambiando las opciones.
 -- Finalmente encapsula todo en IO.
+-- usageInfo: Return a string describing the usage of a command, derived from the header (first argument) and the options described by the second argument.
 finalOptions :: [String] -> IO (Options, [String])
 finalOptions argv = case getOpt Permute options argv of
   (o, n, []  ) -> return (foldl (flip id) defaultOptions o, n)
@@ -65,3 +68,14 @@ main = do
     (opts', _) <- finalOptions opts
     runOptions s opts'
 
+runOptions :: FilePath -> Options -> IO()
+runOptions fp opts 
+    | optHelp opts = putStrLn (usageInfo "Uso: " options)
+    | otherwise = do 
+      s <- readFile fp 
+      case parseComm fp s of
+        Left error -> print error 
+        Right ast -> if  
+            | optAST opts   -> print ast 
+            | optEval opts  -> print (E.eval ast)
+            | otherwise     -> print ast 

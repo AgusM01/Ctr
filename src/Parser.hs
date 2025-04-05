@@ -60,7 +60,7 @@ ctr = makeTokenParser
 -- ContExp2 ::= zero 
 --              | one var cur -> Cur por ahora solo USD 
 --              | one date cur -> Cur por ahora solo USD
---              |'give' ContExp1 
+--              | 'give' ContExp1 
 --              | 'truncate' var ContExp1
 --              | 'scale' nat ContExp1  
 --              | var
@@ -204,4 +204,4 @@ commDateParser = do reserved ctr "date"
 ------------------------------------
 parseComm :: SourceName -> String -> Either ParseError Comm 
 parseComm = parse (totParser commParser)
-
+-- parse p filePath input runs a parser p over Identity without user state. The filePath is only used in error messages and may be the empty string. Returns either a ParseError (Left) or a value of type a (Right).

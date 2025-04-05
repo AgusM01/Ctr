@@ -83,33 +83,30 @@ getEnvD = State (\svc svd -> return svd)
 
 -- Evalúa un programa en el estado nulo. 
 eval :: Comm -> PlotList        
-eval c = fst $ fst $ runState (stepCommStar c) initEnvVC initEnvVD
+eval (Seq (initdate@(InitDate d m y)) c) = fst $ fst $ runState (stepCommStar c initdate []) initEnvVC initEnvVD
 
 -- Evalúa múltiples pasos de un comando. Hasta alcanzar un Skip.
 -- No devuelve un valor en sí ya que sólo tiene efectos secundarios.
-stepCommStar :: MonadState m => Comm -> m PlotList
-stepCommStar Skip = return []
-stepCommStar c = (fstComm c) >>= \c' -> stepCommStar c'
-
-fstComm :: MonadState m => Comm -> m Comm
-fstComm  (Seq initdate@(InitDate d m y) c2) = stepComm c2 initdate  
-
+stepCommStar :: MonadState m => Comm -> Comm -> PlotList -> m PlotList
+stepCommStar Skip _ pl = return pl
+stepCommStar c initdate pl = (stepComm c initdate) >>= \c' -> stepCommStar (fst c') initdate ((snd c') ++ pl) 
+                                                                  
 -- Evalua un paso de un comando
-stepComm :: MonadState m => Comm -> Comm -> m Comm
-stepComm Skip _ = return Skip -- Nunca va a ser Skip
-stepComm (LetCont v1 ctr ) initdate =  do eva <- evalCtr ctr initdate
-                                          update v1 (Left eva) 
-                                          return Skip 
+stepComm :: MonadState m => Comm -> Comm -> m (Pair Comm PlotList)
+stepComm Skip _ = return (Skip :!: []) -- Si es Skip se agarra en stepCommStar. 
+stepComm (LetCont v1 ctr) initdate =  do eva <- evalCtr ctr initdate
+                                         update v1 (Left eva) 
+                                         return (Skip :!: eva) 
 stepComm (LetDate v1 date) _ =  do update v1 (Right date) 
-                                   return Skip 
-stepComm (Seq Skip c2) _ = return c2 
+                                   return (Skip :!: []) 
+stepComm (Seq Skip c2) _ = return (c2 :!: []) 
 stepComm (Seq c1 c2) initdate  = do  sc1 <- stepComm c1 initdate 
-                                     return (Seq sc1 c2)
+                                     return ((Seq (fst sc1) c2) :!: snd sc1)
 
 evalCtr :: MonadState m => Contract -> Comm -> m PlotList 
-evalCtr Zero initdate       = return []
+evalCtr Zero _       = return []
 evalCtr (OneV v) initdate = do d <- lookfordate v
-                               if (compDates initdate d) then (return [(d, 1)])
+                               if (compDates initdate d) then (return [(d,1)])
                                  else return []
 evalCtr (OneD d) initdate =  if (compDates initdate d) then (return [(d,1)])
                                else return [] 
@@ -134,5 +131,5 @@ evalCtr (Then c1 c2) initdate = do v1 <- evalCtr c1 initdate
                                               return v2)
 evalCtr (Scale i c) initdate = do v <- evalCtr c initdate 
                                   return (scaleCtr v i)
-evalCtr (VarC var) initdate = do c <- lookforcontract var 
-                                 return c
+evalCtr (VarC var) _ = do c <- lookforcontract var 
+                          return c
