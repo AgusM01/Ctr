@@ -18,6 +18,10 @@ import Control.Monad                                    ( liftM
                                                         , ap
                                                         )
 
+import Seq
+import Par 
+import Arr 
+import ArrSeq
 -- Entornos
 --type EnvDI = M.Map Date Int 
 type EnvVC = M.Map Var PlotList 
@@ -66,8 +70,8 @@ instance MonadState State where
 
 -- Agrega la primera fecha y el monto de dinero actual.
 -- Siempre empezamos en 0
-addInitDate :: MonadState m => Comm -> m PlotList
-addInitDate (InitDate d m y) = return [(D d m y, 0)]
+--addInitDate :: MonadState m => Comm -> m PlotList
+--addInitDate (InitDate d m y) = return [(D d m y, 0)]
 
 
 --addVal :: MonadState m => PlotList -> m PlotList -> m PlotList
@@ -83,38 +87,38 @@ getEnvD = State (\svc svd -> return svd)
 
 -- Evalúa un programa en el estado nulo. 
 eval :: Comm -> PlotList        
-eval (Seq (initdate@(InitDate d m y)) c) = fst $ fst $ runState (stepCommStar c initdate []) initEnvVC initEnvVD
+eval (Seq (initdate@(InitDate d m y)) c) = fst $ fst $ runState (stepCommStar c initdate emptyS) initEnvVC initEnvVD
 
 -- Evalúa múltiples pasos de un comando. Hasta alcanzar un Skip.
 -- No devuelve un valor en sí ya que sólo tiene efectos secundarios.
 stepCommStar :: MonadState m => Comm -> Comm -> PlotList -> m PlotList
 stepCommStar Skip _ pl = return pl
-stepCommStar c initdate pl = (stepComm c initdate) >>= \c' -> stepCommStar (fst c') initdate ((snd c') ++ pl) 
+stepCommStar c initdate pl = (stepComm c initdate) >>= \c' -> stepCommStar (fst c') initdate (appendS (snd c') pl) 
                                                                   
 -- Evalua un paso de un comando
 stepComm :: MonadState m => Comm -> Comm -> m (Pair Comm PlotList)
-stepComm Skip _ = return (Skip :!: []) -- Si es Skip se agarra en stepCommStar. 
+stepComm Skip _ = return (Skip :!: emptyS) -- Si es Skip se agarra en stepCommStar. 
 stepComm (LetCont v1 ctr) initdate =  do eva <- evalCtr ctr initdate
                                          update v1 (Left eva) 
                                          return (Skip :!: eva) 
 stepComm (LetDate v1 date) _ =  do update v1 (Right date) 
-                                   return (Skip :!: []) 
-stepComm (Seq Skip c2) _ = return (c2 :!: []) 
+                                   return (Skip :!: emptyS) 
+stepComm (Seq Skip c2) _ = return (c2 :!: emptyS) 
 stepComm (Seq c1 c2) initdate  = do  sc1 <- stepComm c1 initdate 
                                      return ((Seq (fst sc1) c2) :!: snd sc1)
 
 evalCtr :: MonadState m => Contract -> Comm -> m PlotList 
-evalCtr Zero _       = return []
+evalCtr Zero _       = return emptyS
 evalCtr (OneV v) initdate = do d <- lookfordate v
-                               if (compDates initdate d) then (return [(d,1)])
-                                 else return []
-evalCtr (OneD d) initdate =  if (compDates initdate d) then (return [(d,1)])
-                               else return [] 
+                               if (compDates initdate d) then (return (singletonS (d,1)))
+                                 else return emptyS
+evalCtr (OneD d) initdate =  if (compDates initdate d) then (return (singletonS (d,1)))
+                               else return emptyS 
 evalCtr (Give c) initdate   = do l <- evalCtr c initdate
                                  return (negatePlotList l) -- Funcion que toma una PlotList y niega todos sus valores.
 evalCtr (And c1 c2) initdate = do v1 <- evalCtr c1 initdate
                                   v2 <- evalCtr c2 initdate 
-                                  return (v1 ++ v2)
+                                  return (appendS v1 v2)
 evalCtr (Or c1 c2) initdate = do v1 <- evalCtr c1 initdate 
                                  v2 <- evalCtr c2 initdate
                                  if (betterContract v1 v2) then (return v1) -- betterContract toma dos listas de valores y verifica si la primera vale mas que la segunda
@@ -123,7 +127,7 @@ evalCtr (TruncateV var c) initdate = do d <- lookfordate var
                                         evalCtr (TruncateD d c) initdate 
 evalCtr (TruncateD d c) initdate = do v <- evalCtr c initdate
                                       if (compDates initdate d) then (return (truncateCtr v d))  
-                                        else return []
+                                        else return emptyS
 evalCtr (Then c1 c2) initdate = do v1 <- evalCtr c1 initdate 
                                    case v1 of 
                                     xs -> return xs 

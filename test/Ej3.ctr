@@ -1,0 +1,6 @@
+date 7 3 2025;
+c = one 28 12 2025;
+d = scale 20 c;
+f = c and d;
+g = c or d;
+skip

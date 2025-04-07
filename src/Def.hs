@@ -1,5 +1,7 @@
 module Def where
 
+import qualified Arr as A
+
 -- Usado para definir la fecha 
 type Day = Int
 type Month = Int 
@@ -7,8 +9,8 @@ type Year = Int
 
 -- Valores 
 -- Por ahora, solo USD 
-type PlotList = [(Date, Int)] --Currency)]
-
+--type PlotList = [(Date, Int)] --Currency)]
+type PlotList = A.Arr (Date, Int)
 
 -- Inf es para el caso de un horizonte infinito (al momento de crear contrtos One)
 data Date = D Day Month Year deriving Show 

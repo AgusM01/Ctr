@@ -1,5 +1,4 @@
 date 13 3 2025;
-// s_init = 0 USD; -> Siempre se empieza con 0.
 c_z = zero;
 c_one = one 28 12 2025;
 c_scale = scale 10 c_one;

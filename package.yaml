@@ -24,6 +24,8 @@ dependencies:
 - strict
 - containers 
 - parsec
+- vector
+- parallel
 
 default-extensions:
 - MultiWayIf

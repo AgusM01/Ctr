@@ -25,11 +25,15 @@ source-repository head
 
 library
   exposed-modules:
+      Arr
+      ArrSeq
       Def
       Eval
       Lib
       Monads
+      Par
       Parser
+      Seq
   other-modules:
       Paths_Ctr
   autogen-modules:
@@ -42,8 +46,10 @@ library
   build-depends:
       base >=4.7 && <5
     , containers
+    , parallel
     , parsec
     , strict
+    , vector
   default-language: Haskell2010
 
 executable Ctr-exe
@@ -61,8 +67,10 @@ executable Ctr-exe
       Ctr
     , base >=4.7 && <5
     , containers
+    , parallel
     , parsec
     , strict
+    , vector
   default-language: Haskell2010
 
 test-suite Ctr-test
@@ -81,6 +89,8 @@ test-suite Ctr-test
       Ctr
     , base >=4.7 && <5
     , containers
+    , parallel
     , parsec
     , strict
+    , vector
   default-language: Haskell2010

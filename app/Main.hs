@@ -8,6 +8,12 @@ import            Control.Monad
 import qualified  System.Environment    as Env 
 import qualified  Eval                  as E
 
+import Seq
+import Par 
+import Arr 
+import ArrSeq
+
+import qualified Arr as A
 -------------------------------------------------------
 
 data Options = Options -- Define las opciones utilizando un registro.
@@ -77,5 +83,8 @@ runOptions fp opts
         Left error -> print error 
         Right ast -> if  
             | optAST opts   -> print ast 
-            | optEval opts  -> print (E.eval ast)
+            | optEval opts  -> print (mapS (\(d,s) -> (d, (reduceS (+) 0 s))) (collect (E.eval ast)))
             | otherwise     -> print ast 
+
+
+

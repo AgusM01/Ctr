@@ -1,0 +1,8 @@
+date 7 3 2025;
+c = one 10 3 2025;
+d = scale 30 c;
+f = truncate 10 4 2025 d;
+g = give d;
+h = d and d;
+g = c or f;
+skip
