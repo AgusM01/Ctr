@@ -89,3 +89,7 @@ group f s = let tr = showtS s
                             in if (f (nthS l' ((lengthS l') - 1)) (nthS r' 0)) == EQ then appendS (takeS l' (lengthS l' - 1)) r'
                                     else (appendS l' r')
 
+finalSeq :: A.Arr (Date, Int) -> A.Arr (Date, Int)
+finalSeq s = let (x,y) = scanS f (nthS s 0) (dropS s 1)
+             in appendS x (singletonS y)
+        where f (d1,i1) (d2,i2) = (d2, i1 + i2) 
