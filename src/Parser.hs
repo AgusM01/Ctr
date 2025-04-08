@@ -6,6 +6,7 @@ import Text.Parsec.Token
 import Text.Parsec.Language
 import Def 
 
+import Data.Time.Calendar (fromGregorian, fromGregorianValid)
 
 totParser :: Parser a -> Parser a 
 totParser p = do whiteSpace ctr 
@@ -21,10 +22,10 @@ ctr = makeTokenParser
           commentEnd = "*/"                                                    ,
           commentLine = "//"                                                   ,
           opLetter = char '='                                                  ,
-          reservedNames = [ "zero", "one", "date", {-"USD", "EUR", "ARS",-} "skip"], 
+          reservedNames = [ "zero", "one", "date", "skip"], 
           reservedOpNames = [ "give", "and", "or", "truncate", 
-                            "then", "scale", {-"get",-} 
-                            {-"anytime,"-}"=", ";" ]
+                            "then", "scale",  
+                            "=", ";" ]
         }
     )
 
@@ -85,7 +86,6 @@ op2Parser :: Parser Contract
 op2Parser = try giveParser <|> 
             try truncateParser <|> 
             try scaleParser <|> 
-           -- try anytimeParser <|>
             varCParser
 
 varCParser :: Parser Contract
@@ -105,11 +105,9 @@ zeroParser = do reserved ctr "zero"
 oneParser :: Parser Contract
 oneParser = try (do reserved ctr "one"
                     v <- varParser 
-                    --c <- curParser 
                     return $ OneV v)
                 <|> do reserved ctr "one"
                        d <- dateParser
-                       --c <- curParser
                        return $ OneD d
 
 parensParser :: Parser Contract 
@@ -138,35 +136,18 @@ scaleParser = do reservedOp ctr "scale"
                  n <- natural ctr
                  c <- contexp1
                  return (Scale (fromInteger n) c)
-{-
-anytimeParser :: Parser Contract
-anytimeParser = do reservedOp ctr "anytime"
-                   c <- contexp1
-                   return $ Anytime c
-
-
-curParser :: Parser Currency 
-curParser = try (do reserved ctr "GBP"
-                    return GBP)
-                <|> try (do reserved ctr "USD"
-                            return USD)
-                        <|> try (do reserved ctr "ARS"
-                                    return ARS)
-                                 <|> do reserved ctr "EUR"
-                                        return EUR
--}
 
 dateParser :: Parser Date 
 dateParser = do d <- natural ctr
                 m <- natural ctr
-                y <- natural ctr 
-                return $ D (fromInteger d) (fromInteger m) (fromInteger y)
+                y <- natural ctr
+                case fromGregorianValid y (fromInteger m) (fromInteger d) of 
+                    Just _ -> return $ D (fromInteger d) (fromInteger m) (fromInteger y)
+                    Nothing -> fail "Fecha inválida."
 
 varParser :: Parser Var
 varParser = do identifier ctr 
 
--- Puede aparecer un skip en cualquier momento.
--- No importa, se ajusta en el eval.
 commParser :: Parser Comm 
 commParser = do d <- commDateParser 
                 reservedOp ctr ";"
@@ -197,8 +178,10 @@ commDateParser :: Parser Comm
 commDateParser = do reserved ctr "date"
                     d <- natural ctr
                     m <- natural ctr
-                    y <- natural ctr 
-                    return $ InitDate (fromInteger d) (fromInteger m) (fromInteger y)
+                    y <- natural ctr
+                    case fromGregorianValid y (fromInteger m) (fromInteger d) of 
+                        Just _  -> return $ InitDate (fromInteger d) (fromInteger m) (fromInteger y)
+                        Nothing -> fail "Fecha inicial invalida." 
 ------------------------------------
 -- Función de parseo
 ------------------------------------

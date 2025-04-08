@@ -12,6 +12,7 @@ import Graphics.Rendering.Chart.Backend.Diagrams
 import Data.Time.Calendar (fromGregorian)
 
 import qualified Arr as A
+
 -- Compara si d1 es anterior a d2. 
 -- Es una función parcial. Su dominio es simplemente: InitDate 
 compDates :: Comm -> Date -> Bool 
@@ -19,6 +20,7 @@ compDates (InitDate d1 m1 y1) (D d2 m2 y2) =    (y1 < y2) ||
                                                 (y1 == y2 && m1 < m2) || 
                                                 (y1 == y2 && m1 == m2 && d1 <= d2)
 
+-- Compara dos fechas.
 compDatesPost :: Date -> Date -> Ordering
 compDatesPost (D d1 m1 y1) (D d2 m2 y2) | d1 == d2 && m1 == m2 && y1 == y2 = EQ
                                         | y1 < y2 = LT
@@ -34,29 +36,27 @@ ord (d1,i1) (d2,i2) = compDatesPost d1 d2
 ordArr :: (Date, A.Arr Int) -> (Date, A.Arr Int) -> Ordering
 ordArr (d1,a1) (d2,a2) = compDatesPost d1 d2
 
-
+-- Checkea si el contrato xs1 da más que el xs2
 betterContract :: PlotList -> PlotList -> Bool
---betterContract _ emptyS = True
---betterContract emptyS _ = False 
 betterContract xs1 xs2 = sumPlotList xs1 >= sumPlotList xs2 
 
+-- Suma todos los valores de una PlotList.
 sumPlotList :: PlotList -> Int 
---sumPlotList emptyS = 0
 sumPlotList s = snd $ reduceS (\(d1,v1) (d2,v2) -> (d2, v1 + v2)) (D 0 0 0, 0) s  
 
+-- Niega todos los valores de una PlotList.
 negatePlotList :: PlotList -> PlotList 
---negatePlotList emptyS = emptyS
 negatePlotList s = scaleCtr s (-1) 
 
+-- Escala una PlotList por el valor dado.
 scaleCtr :: PlotList -> Int -> PlotList
---scaleCtr emptyS _ = emptyS
 scaleCtr s v = mapS (\(d,i) -> (d, v*i)) s 
 
+-- Cambia las fechas de una PlotList por la dada.
 truncateCtr :: PlotList -> Date -> PlotList 
---truncateCtr emptyS _ = emptyS
 truncateCtr s nd = mapS (\(_,i) -> (nd,i)) s 
 
-
+-- Función para unir secuencias.
 merge :: (a -> a -> Ordering) -> A.Arr a -> A.Arr a -> A.Arr a 
 merge r s1 s2   | lengthS s1 == 0 = s2 
                 | lengthS s2 == 0 = s1
@@ -64,14 +64,14 @@ merge r s1 s2   | lengthS s1 == 0 = s2
                                     LT -> appendS (singletonS (nthS s1 0)) (merge r (dropS s1 1) s2)
                                     _ ->  appendS (singletonS (nthS s2 0)) (merge r s1 (dropS s2 1))
                      
- 
+-- Función para ordenar secuencias.
 sort :: (a -> a -> Ordering) -> A.Arr a -> A.Arr a
 sort re s = case showtS s of
             EMPTY -> emptyS
             ELT a -> singletonS a
             NODE l r -> merge re (sort re l) (sort re r)
 
-
+-- Función para poder unir los montos que tienen misma fecha.
 collect :: A.Arr (Date,Int) -> A.Arr (Date, A.Arr Int)
 collect s = let sOrd = sort ord s
                 s' = mapS (\(a,b) -> (a, singletonS b)) sOrd
@@ -101,6 +101,7 @@ finalSeq s = let (x,y) = scanS f (nthS s 0) (dropS s 1)
 postProcess :: PlotList -> A.Arr (Date, Int)
 postProcess pl = (finalSeq (mapS (\(d,s) -> (d, (reduceS (+) 0 s))) (collect pl)))
 
+-- Función que permite plottear.
 finalPlot :: A.Arr (Date, Int) -> IO()
 finalPlot s = toFile def "Historial.png" $ do 
         layout_title .= "Historial"

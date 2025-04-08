@@ -1,14 +1,3 @@
-{-
- Este módulo requiere la librería Vector. 
- 
- Esta puede instalarse utilizando Cabal, ejecutando el siguiente código  
- en un intérprete de comandos: 
- 
- $ cabal update
- $ cabal install vector
- 
--}
-
 module Arr (Arr, length, tabulate, (!), subArray, fromList, flatten, empty) where
 
 import Prelude hiding (length)

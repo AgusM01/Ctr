@@ -22,13 +22,12 @@ import Seq
 import Par 
 import Arr 
 import ArrSeq
+
 -- Entornos
---type EnvDI = M.Map Date Int 
 type EnvVC = M.Map Var PlotList 
 type EnvVD = M.Map Var Date 
 
--- Cambiar por dos estados y el valor a devolver sea la lista de tuplas date-dinero.
--- Entorno nulo 
+-- Entornos nulo 
 initEnvVC :: EnvVC
 initEnvVC = M.empty
 
@@ -60,22 +59,9 @@ instance MonadState State where
     lookfordate v = State (\svc svd -> ((lookfordate' v svd :!: svc) :!: svd))
         where lookfordate' v svd = fromJust $ M.lookup v svd
 
-   {- lookfor v = State (\svc svd  -> ((lookfor' v svc svd :!: svc) :!: svd))
-        where lookfor' v svc sdv = case M.lookup v svc of 
-                                        Just x  -> x 
-                                        Nothing -> fromJust $ M.lookup v sdv-}
     update v i = State (\svc svd -> case i of 
                                        Right d  -> ( () :!: svc ) :!: M.insert v d svd
                                        Left c   -> ( () :!: M.insert v c svc ) :!: svd)
-
--- Agrega la primera fecha y el monto de dinero actual.
--- Siempre empezamos en 0
---addInitDate :: MonadState m => Comm -> m PlotList
---addInitDate (InitDate d m y) = return [(D d m y, 0)]
-
-
---addVal :: MonadState m => PlotList -> m PlotList -> m PlotList
---addVal v m = State ( 
 
 {-
 getEnvC :: MonadState m => m EnvVC

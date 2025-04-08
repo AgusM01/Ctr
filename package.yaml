@@ -34,7 +34,6 @@ default-extensions:
 - MultiWayIf
 
 ghc-options:
-- -Wall
 - -Wcompat
 - -Widentities
 - -Wincomplete-record-updates
