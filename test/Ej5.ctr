@@ -1,5 +1,6 @@
 date 8 3 2025;
-c = one 10 3 2025;
+dc = 10 3 2025;
+c = one dc;
 cc = one 11 3 2025;
 ccc = one 11 5 2025;
 ccccc = one 11 9 2025;

@@ -73,7 +73,7 @@ getEnvD = State (\svc svd -> return svd)
 
 -- Evalúa un programa en el estado nulo. 
 eval :: Comm -> PlotList        
-eval (Seq (initdate@(InitDate d m y)) c) = fst $ fst $ runState (stepCommStar c initdate emptyS) initEnvVC initEnvVD
+eval (Seq (initdate@(InitDate d m y)) c) = appendS (singletonS (D d m y, 0)) (fst $ fst $ runState (stepCommStar c initdate emptyS) initEnvVC initEnvVD)
 
 -- Evalúa múltiples pasos de un comando. Hasta alcanzar un Skip.
 -- No devuelve un valor en sí ya que sólo tiene efectos secundarios.

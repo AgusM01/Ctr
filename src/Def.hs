@@ -18,9 +18,6 @@ type Var = String
 
 -- AST del lenguaje
 -- Representación de un contrato
--- Mejora a futuro: Poder poner variables en lugar de Contracts.
--- Preguntar si hay una manera cómoda de hacerlo sin que sea verborrágica (agregar 
--- un constructor más poniendo Var en vez de Contract)
 data Contract = Zero
                 | OneV Var  -- En el caso de poner date como una variable.
                 | OneD Date -- En el caso de poner la fecha directamente.

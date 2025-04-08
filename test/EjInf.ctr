@@ -1,0 +1,13 @@
+date 8 4 2025;
+d = 10 12 2025;
+dv = 28 12 2025;
+di = 10 4 2024;
+c = one d;
+ci = one di;
+s = scale 100 c;
+g = give s;
+t = ci then c;
+tr = truncate dv c;
+a = s and c;
+o = s or c;
+skip

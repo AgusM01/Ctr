@@ -40,18 +40,15 @@ ctr = makeTokenParser
 -- Para poner fechas t valores, estos deben estar previamente definidos
 -- en una variable. 
 
--- letter :: 'a' | ... | '>'  
+-- letter ::= 'a' | ... | 'z'  
 -- digit ::= '0' | ... | '9'
 -- nat ::= digit | digit nat  
 -- var ::= letter | letter var
 
--- CommD = initDate ';' Comm
--- Comm ::=  var '=' ContExp | Comm ';' Comm | var '=' Date | 'skip' 
+-- CommInit = initDate ';' Comm
+-- Comm ::=  var '=' ContExp1 | Comm ';' Comm | var '=' Date | 'skip' 
 
--- Date ::=  'date' num num num
-
--- Por ahora solo USD
--- Cur ::= "GBP" | "USD" | "ARS" | "EUR"
+-- Date ::=  'date' nat nat nat
 
 -- ContExp1 ::=  ContExp1 'and' ContExp2 
 --              | ContExp1 'or' ContExp2 
@@ -59,9 +56,10 @@ ctr = makeTokenParser
 --              | ContExp2
 
 -- ContExp2 ::= zero 
---              | one var cur -> Cur por ahora solo USD 
---              | one date cur -> Cur por ahora solo USD
---              | 'give' ContExp1 
+--              | one var 
+--              | one date 
+--              | 'give' ContExp1
+--              | 'truncate' date ContExp1
 --              | 'truncate' var ContExp1
 --              | 'scale' nat ContExp1  
 --              | var
