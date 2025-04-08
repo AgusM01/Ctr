@@ -26,6 +26,9 @@ dependencies:
 - parsec
 - vector
 - parallel
+- time
+- Chart 
+- Chart-diagrams
 
 default-extensions:
 - MultiWayIf

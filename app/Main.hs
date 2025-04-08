@@ -83,7 +83,7 @@ runOptions fp opts
         Left error -> print error 
         Right ast -> if  
             | optAST opts   -> print ast 
-            | optEval opts  -> print (finalSeq (mapS (\(d,s) -> (d, (reduceS (+) 0 s))) (collect (E.eval ast))))
+            | optEval opts  -> finalPlot (postProcess (E.eval ast))
             | otherwise     -> print ast 
 
 

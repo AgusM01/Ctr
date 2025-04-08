@@ -1,0 +1,18 @@
+date 8 3 2025;
+c = one 10 3 2025;
+cc = one 11 3 2025;
+ccc = one 11 5 2025;
+ccccc = one 11 9 2025;
+cccccc = one 24 11 2025;
+ccccccc = one 25 12 2025;
+cccccccc = one 7 11 2025;
+d = scale 30 c;
+dd = scale 10 cc;
+ddd = scale 5 ccc;
+f = truncate 10 4 2025 d;
+g = give d;
+gg = give dd;
+gg = give (truncate 17 8 2025 dd);
+h = d and d;
+g = c or f;
+skip

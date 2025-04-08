@@ -7,6 +7,10 @@ import Par
 import Arr 
 import ArrSeq
 
+import Graphics.Rendering.Chart.Easy
+import Graphics.Rendering.Chart.Backend.Diagrams
+import Data.Time.Calendar (fromGregorian)
+
 import qualified Arr as A
 -- Compara si d1 es anterior a d2. 
 -- Es una función parcial. Su dominio es simplemente: InitDate 
@@ -22,7 +26,7 @@ compDatesPost (D d1 m1 y1) (D d2 m2 y2) | d1 == d2 && m1 == m2 && y1 == y2 = EQ
                                         | y1 == y2 && m1 == m2 && (d1 < d2) = LT
                                         | y1 > y2 = GT
                                         | y1 == y2 && (m1 > m2) = GT
-                                        | y1 == y2 && m1 == m2 && d1 > y2 = GT
+                                        | y1 == y2 && m1 == m2 && d1 > d2 = GT
 
 ord :: (Date, Int) -> (Date, Int) -> Ordering
 ord (d1,i1) (d2,i2) = compDatesPost d1 d2
@@ -92,4 +96,16 @@ group f s = let tr = showtS s
 finalSeq :: A.Arr (Date, Int) -> A.Arr (Date, Int)
 finalSeq s = let (x,y) = scanS f (nthS s 0) (dropS s 1)
              in appendS x (singletonS y)
-        where f (d1,i1) (d2,i2) = (d2, i1 + i2) 
+        where f (d1,i1) (d2,i2) = (d2, i1 + i2)
+
+postProcess :: PlotList -> A.Arr (Date, Int)
+postProcess pl = (finalSeq (mapS (\(d,s) -> (d, (reduceS (+) 0 s))) (collect pl)))
+
+finalPlot :: A.Arr (Date, Int) -> IO()
+finalPlot s = toFile def "Historial.png" $ do 
+        layout_title .= "Historial"
+        let dateS = mapS (\(D d m y, i) -> ([(fromGregorian (toInteger y) m d)], [i])) s
+            (x,y) = scanS (\(x1,y1) (x2,y2) -> (x1 ++ x2, y1 ++ y2)) (nthS dateS 0) (dropS dateS 1)
+            datos = zip (fst y) (snd y)
+        plot (line "Dinero - USD" [datos])
+
