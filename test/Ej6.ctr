@@ -1,0 +1,8 @@
+date 8 4 2025;
+d = 10 4 2025;
+c = one d;
+s = scale 20 c;
+d = 10 8 2025;
+c = one d;
+ss = scale 30 c;
+skip
