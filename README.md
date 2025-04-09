@@ -21,7 +21,7 @@ date d m y;
 ```
 el cual setea la fecha inicial de las operaciones.
 
-** Cualquier contrato con fecha anterior a esta, es descartado.**
+**Cualquier contrato con fecha anterior a esta, es descartado**
 
 Para definir una fecha cualquiera, simplemente se puede hacer:
 
@@ -54,7 +54,7 @@ c = one d;
 A partir de ahora, **c** denotará este contrato.
 
 ### Scale
-Este contrato toma un **Int** *i* y un contrato cualquiera y me permite **multiplicar el valor de dicho contrato por *i* **
+Este contrato toma un **Int** *i* y un contrato cualquiera y me permite **multiplicar el valor de dicho contrato por i**
 
 ``` 
 s = scale Int (one d); 
@@ -134,13 +134,16 @@ En este caso, se quedará con *s*.
 
 ## Composición del código
 
-**app** -> Main.hs: archivo main.
-**src** -> Def.hs: AST del lenguaje.
-        -> Eval.hs: Evaluador del lenguaje.
-        -> Parser.hs: Parser del lenguaje.
-        -> Lib.hs: Funciones útiles.
-        -> ... : Implementaciones para secuencias, arreglos y paralelismo.
-**test**: Tests para el lenguaje.
+- `app/`
+  - `Main.hs`: archivo principal
+- `src/`
+  - `Def.hs`: AST del lenguaje
+  - `Eval.hs`: Evaluador del lenguaje
+  - `Parser.hs`: Parser del lenguaje
+  - `Lib.hs`: Funciones útiles
+  - `...`: Implementaciones para secuencias, arreglos y paralelismo
+- `test/`
+  - Tests para el lenguaje
 
 Los demás archivos son para la construcción del proyecto.
 
@@ -173,9 +176,9 @@ stack exec Ctr-exe -- PATH/File.ctr -opt;
 donde ejecutará el archivo llamado *File.ctr* ubicado en la carpeta *PATH*.
 
 Las opciones disponibles son:
--> -a: Muestra el AST del programa.
--> -e: Evalua el programa.
--> -h: Imprime ayuda.
+> -a: Muestra el AST del programa.
+> -e: Evalua el programa.
+> -h: Imprime ayuda.
 
 Por ejemplo, para evaluar el archivo **Ej5.ctr** en la carpeta *test*:
 
