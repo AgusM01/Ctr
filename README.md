@@ -176,8 +176,11 @@ stack exec Ctr-exe -- PATH/File.ctr -opt;
 donde ejecutará el archivo llamado *File.ctr* ubicado en la carpeta *PATH*.
 
 Las opciones disponibles son:
+
 > -a: Muestra el AST del programa.
+
 > -e: Evalua el programa.
+
 > -h: Imprime ayuda.
 
 Por ejemplo, para evaluar el archivo **Ej5.ctr** en la carpeta *test*:
